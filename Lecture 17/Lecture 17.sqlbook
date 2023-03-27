@@ -99,8 +99,11 @@ Try it yourself!
 -- Select a new driver id (needs to be unique)
 -- Make sure to deparate arguments by a semicolon!
 
+INSERT INTO drivers  VALUES (5, '坤坤','中国',101);
 
+INSERT INTO drivers  VALUES (7, '小坤子', '中国',99);
 
+Insert Into drivers values (15, 'Eric','china', 1); # use signle '' and ;
 -- SQLBook: Markup
 # <span style="color:darkblue"> II. Dataset Operations </span>
 
@@ -131,11 +134,11 @@ WHERE nationality = 'German';
 
 -- Evalute OR conditions
 SELECT * FROM drivers
-WHERE (nationality = 'United States') OR (nationality = 'Indian');
+WHERE (nationality = 'Indian') OR (nationality = '中国');
 
 -- Evaluate AND conditions
 SELECT * FROM drivers
-WHERE (nationality = 'German') AND (driver_id = 2);
+WHERE (nationality = '中国') AND (driver_id = 1);
 
 -- SQLBook: Markup
 <font size="5"> 
@@ -150,7 +153,7 @@ SELECT SUM(victories) AS sum_victories,
        COUNT(*) AS num_rows,
        AVG(victories) AS mean_victories,
        MIN(victories) AS min_victories,
-       MAX(victories) AS max_victories
+       MAX(victories) AS max_victories # do as many as you want
 FROM drivers;
 -- SQLBook: Markup
 <font size="5"> 
@@ -187,7 +190,8 @@ with more than 60 victories
 -- SQLBook: Code
 -- Write your own code!
 
-
+SELECT driver_id, nationality FROM drivers
+WHERE victories > 60
 
 -- SQLBook: Markup
 # <span style="color:darkblue"> III. Groupby + Chaining </span>
@@ -238,7 +242,7 @@ SELECT nationality,
        MIN(victories) AS min_victories,
        MAX(victories) AS max_victories
 FROM drivers
-WHERE nationality = 'German'
+WHERE (nationality = 'German') OR (nationality = 'Columbia')
 GROUP BY nationality
 HAVING SUM(victories) > 50;
 -- SQLBook: Markup
