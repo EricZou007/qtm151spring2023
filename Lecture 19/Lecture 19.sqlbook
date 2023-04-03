@@ -88,6 +88,24 @@ The quiz will use the Formula 1 dataset
 with column names and data types
 - You will need to use the SQL command ``` CREATE TABLE ```
 
+-- SQLBook: Code
+
+
+
+DROP TABLE IF EXISTS lap_times;
+CREATE TABLE lap_times(
+    "raceId"  int,
+    "driverId" int,
+    lap int,
+    position int,
+    time VARCHAR(255),
+    milliseconds int
+);
+
+COPY lap_times
+FROM '/private/tmp/data_raw/lap_times.csv' DELIMITER ',' CSV HEADER;;
+
+-- or: WITH (DELIMITER ',', FORMAT csv, HEADER MATCH);
 -- SQLBook: Markup
 
 <font size = "5">
@@ -101,6 +119,25 @@ from ".csv" files using the command <br>
 - Display the dataset using ``` SELECT * FROM .... ```
 - See Lecture 18 for more details
 
+-- SQLBook: Code
+DROP TABLE IF EXISTS drivers;
+CREATE TABLE drivers(
+    "driverId" int,
+    "driverRef" VARCHAR(255),
+    number  Varchar(255),
+    code   VARCHAR(3),
+    forename VARCHAR(225),
+    surname  VARCHAR(255),
+    dob  VARCHAR(255),
+    nationality VARCHAR(255),
+    url VARCHAR(255)
+);
+
+COPY drivers
+FROM '/private/tmp/data_raw/drivers.csv'
+ WITH (DELIMITER ',', FORMAT csv, HEADER MATCH);
+
+SELECT*FROM drivers
 -- SQLBook: Markup
 <font size = "5">
 
@@ -108,6 +145,15 @@ from ".csv" files using the command <br>
 
 - Subset one of the above datasets using ``` WHERE ```
 - Then sort the datasets in ascending or descending order 
+-- SQLBook: Code
+
+
+SELECT "driverId", 
+AVG(milliseconds) AS avg_milliseconds
+FROM lap_times
+WHERE (lap = 1) or (lap = 2)   --before aggregate
+GROUP BY "driverId"
+ORDER BY avg_milliseconds DESC; --having() after aggregate
 -- SQLBook: Markup
 <font size = "5">
 
@@ -120,6 +166,12 @@ from ".csv" files using the command <br>
 
 
 HINT: See the end of lectures 17
+-- SQLBook: Code
+SELECT COUNT(DISTINCT "driverId") AS num_distinct_parties,
+       COUNT(*) AS num_members       
+FROM drivers
+
+
 -- SQLBook: Markup
 <font size = "5">
 
@@ -129,6 +181,13 @@ HINT: See the end of lectures 17
 - Then sort using ``` ORDER BY ```
 
 HINT: See the end of lectures 17 and 18
+-- SQLBook: Code
+
+SELECT "driverId",  --must match with group by
+AVG(milliseconds) AS avg_milliseconds
+FROM lap_times
+GROUP BY "driverId"
+ORDER BY avg_milliseconds DESC; --
 -- SQLBook: Markup
 <font size = "5">
 
@@ -136,3 +195,18 @@ HINT: See the end of lectures 17 and 18
 
 - Compute an aggregate statistict using ```GROUP BY```
 - Subset one of the above datasets using ``` HAVING ```
+-- SQLBook: Code
+SELECT 
+    nationality,               -- select the nationality column
+    SUM("driverId") AS sum_driverId,   -- sum the driverId column and name it sum_driverId
+    AVG("driverId") AS mean_driverId,  -- calculate the average of the driverId column and name it mean_driverId
+    MIN("driverId") AS min_driverId,   -- find the minimum value of the driverId column and name it min_driverId
+    MAX("driverId") AS max_driverId    -- find the maximum value of the driverId column and name it max_driverId
+FROM 
+    drivers                     -- select data from the drivers table
+WHERE 
+    (nationality = 'German') OR (nationality = 'Columbia')  -- filter for records with either German or Columbian nationality
+GROUP BY 
+    nationality                 -- group the results by nationality
+HAVING 
+    SUM("driverId") > 50        -- filter the results to only include records where the sum of driverId is greater than 50
